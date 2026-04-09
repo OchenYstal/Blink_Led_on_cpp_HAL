@@ -1,6 +1,6 @@
 #include "Button.hpp"
 
-Button::Button(GPIO_TypeDef* port, uint16_t pin) : _port(port), _pin(pin) {}
+Button::Button(GPIO_TypeDef* port, uint16_t pin) : _port(port), _pin(pin) { registerButton(this); }
 
 void Button::init()
 {
@@ -19,7 +19,26 @@ void Button::init()
     HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 }
 
-bool Button::isPressed()
+void Button::onPress()
 {
-    return HAL_GPIO_ReadPin(_port, _pin) != GPIO_PIN_RESET;
+    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
+    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_9);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
+    HAL_Delay(200);
 }
+
+bool Button::matches(uint16_t triggerPin) const
+{
+    return (_pin == triggerPin);
+}
+
+void Button::registerButton(Button* btn)
+{
+    if(buttonCount < 16)
+    {
+        buttonList[buttonCount++] = btn;
+    }
+}
+
+Button* Button::buttonList[16] = {nullptr};
+int Button::buttonCount = 0;
