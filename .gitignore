@@ -38,3 +38,5 @@ lib/
 # Системные файлы
 .DS_Store
 Thumbs.db
+TIM.cpp
+TIM.hpp
