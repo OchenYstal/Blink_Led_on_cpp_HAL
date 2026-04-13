@@ -1,53 +1,43 @@
 #include "stm32f1xx_hal.h"
 #include "Led.hpp"
-#include "Button.hpp"
-#define LED_GPIO_PORT_B GPIOB
-#define LED_GPIO_PORT_A GPIOA
-
-#define LED_PIN_2 GPIO_PIN_2
-#define LED_PIN_1 GPIO_PIN_1
-#define LED_PIN_9 GPIO_PIN_9
-//Pin/Port Button
-#define KEY_PIN GPIO_PIN_0
-
-
-int main(void)
-{
-    HAL_Init();
-
-    //Initialize button
-    Button button(GPIOA, KEY_PIN);
-    button.init();
+#include "ButtonInterupt.hpp"
+volatile uint32_t flag = 0;
+Button button(GPIOA, GPIO_PIN_0);
+    Led led1(GPIOA, GPIO_PIN_1);     
+    Led led9(GPIOA, GPIO_PIN_9);  
+    Led blueLed(GPIOB, GPIO_PIN_2); 
     
-    //Initialize led's
-    Led led1(LED_GPIO_PORT_A, LED_PIN_1);
-    Led led9(LED_GPIO_PORT_A, LED_PIN_9);
-    Led led2(LED_GPIO_PORT_B, LED_PIN_2);
-    led2.Init();
+int main(void) {
+    HAL_Init();
+    blueLed.Init();
     led1.Init();
     led9.Init();
-    //Main loop
-    while(1)
-    {
+    button.init();
+    while(1) 
+    {   if(flag)
+        {
+            flag = 0;
+            blueLed.toggle();
+            led1.toggle();
+            led9.toggle(); 
+            HAL_Delay(50); 
+        }        
     }
 }
 
-
-extern "C"
+extern "C" void SysTick_Handler(void) 
 {
-    //Setting SysTick for HAL_Delay()
-    void SysTick_Handler(void)
-    {
-        HAL_GetTick();
-        HAL_IncTick();
-    }
-    void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-    {
-        Button::globalDispatch(GPIO_Pin);
-    }
-    void EXTI0_IRQHandler(void)
-    {
-        HAL_GPIO_EXTI_IRQHandler(KEY_PIN);
-    }
+    HAL_IncTick();
+}
 
+extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if(GPIO_Pin == GPIO_PIN_0)
+    {
+        flag = 1;
+    }
+}
+extern "C" void EXTI0_IRQHandler(void) 
+{
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
