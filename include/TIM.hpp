@@ -4,11 +4,14 @@
 class TIM
 {
     public:
-    TIM(TIM_HandleTypeDef htim, TIM_TypeDef* Instance);
-    void Init_TIM();
-    void onTimer();
+    TIM(TIM_TypeDef* instance, TIM_HandleTypeDef& htim);
+    void Init();
+    void Start();
+    void Stop();
+
+    TIM_HandleTypeDef* GetHandle() { return &_htim; }
 
     private:
-    TIM_TypeDef* _Instance;
-    TIM_HandleTypeDef _htim;
+    TIM_TypeDef* _instance;
+    TIM_HandleTypeDef& _htim;
 };

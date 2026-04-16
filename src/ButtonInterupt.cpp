@@ -10,7 +10,7 @@ void Button::init()
     GPIO_InitTypeDef gpio = {0};
 
     gpio.Pin = _pin;
-    gpio.Mode = GPIO_MODE_IT_RISING;  
+    gpio.Mode = GPIO_MODE_IT_FALLING;  
     gpio.Pull = GPIO_PULLDOWN;           
     HAL_GPIO_Init(_port, &gpio);
     
