@@ -13,5 +13,6 @@ class TIM
 
     private:
     TIM_TypeDef* _instance;
+    // Для того что бы не копировать _htim и использовать по ссылке в функции "C"
     TIM_HandleTypeDef& _htim;
 };
